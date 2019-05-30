@@ -6,6 +6,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.io.Serializable;
+
 public class MainActivity extends AppCompatActivity {
 
 
@@ -16,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
 
     //indice corrente da historia
 
-    private int mStoryIndex; // Ao adicionar condição savedInstanceState pediu para informar um TIPO.
+    //private int mStoryIndex; // Ao adicionar condição savedInstanceState pediu para informar um TIPO.
 
 
     Story mT1 = new Story(R.string.T1_Story);
@@ -42,9 +44,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if(savedInstanceState!=null) {
-            mStoryIndex = savedInstanceState.getInt("StoryKey");
-        }
+
 
         //TODO: Faça o link do layout com a activity
 
@@ -70,14 +70,26 @@ public class MainActivity extends AppCompatActivity {
           mA3_1.setChildStory(mT6);
           mA3_2.setChildStory(mT5);
 
-
+        if(savedInstanceState!=null) {
+            mStorySelected = (Story) savedInstanceState.getSerializable("StoryKey");
+            mStoryTextView.setText(mStorySelected.getStoryID());
+            if(mStorySelected.getAnswerTop() == null){
+                mAnswerTop.setVisibility(View.GONE);
+                mAnswerBottom.setVisibility(View.GONE);
+            }else{
+                mAnswerTop.setText(mStorySelected.getAnswerTop().getAnswerID());
+                mAnswerBottom.setText(mStorySelected.getAnswerBottom().getAnswerID());
+            }
+        }else{
+            mStorySelected = mT1;
+            mStoryTextView.setText(mStorySelected.getStoryID());
+            mAnswerTop.setText(mStorySelected.getAnswerTop().getAnswerID());
+            mAnswerBottom.setText(mStorySelected.getAnswerBottom().getAnswerID());
+        }
 
         // TODO: Coloque o evento do click do botão, caso precise colocar a visibilidade no botão invisivel utilize a função
         // do botão setVisibility(View.GONE):
-        mStorySelected = mT1;
-        mStoryTextView.setText(mStorySelected.getStoryID());
-        mAnswerTop.setText(mStorySelected.getAnswerTop().getAnswerID());
-        mAnswerBottom.setText(mStorySelected.getAnswerBottom().getAnswerID());
+
 
         mAnswerTop.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
 
     protected void onSaveInstanceState(Bundle outState){
         super.onSaveInstanceState(outState);
-        outState.putInt("StoryKey",mStoryIndex);
+        outState.putSerializable("StoryKey",(Serializable) mStorySelected);
     }
 
 }
